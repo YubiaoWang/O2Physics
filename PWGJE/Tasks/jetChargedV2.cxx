@@ -13,7 +13,6 @@
 /// \file jetChargedV2.cxx
 /// \brief This file contains the implementation for the Charged Jet v2 analysis in the ALICE experiment.
 
-
 #include <chrono>
 #include <string>
 #include <vector>

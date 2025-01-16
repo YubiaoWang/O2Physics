@@ -341,7 +341,7 @@ struct JetChargedV2 {
   {
     angle = RecoDecay::constrainAngle(angle);
     if (angle < 0) {
-        angle += o2::constants::math::TwoPI;
+      angle += o2::constants::math::TwoPI;
     }
   }
 

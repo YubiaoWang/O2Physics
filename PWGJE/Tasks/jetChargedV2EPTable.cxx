@@ -77,19 +77,19 @@ DECLARE_SOA_TABLE(MyCollisions, "AOD", "MYCOLLISION", //! vertex information of 
                   o2::soa::Index<>, collision::PosZ);
 using MyCollision = MyCollisions::iterator;
 
-  namespace myTable 
-  {
-    DECLARE_SOA_INDEX_COLUMN(MyCollision, mycollision);
+namespace myTable
+{
+DECLARE_SOA_INDEX_COLUMN(MyCollision, mycollision);
 
-    DECLARE_SOA_COLUMN(Psi2, psi2, Float_t);
-    DECLARE_SOA_COLUMN(Psi3, psi3, Float_t);
-    DECLARE_SOA_COLUMN(EvtPlRes, evtplres, Float_t);
-  }
-  DECLARE_SOA_TABLE(MyTable, "AOD", "MYTABLE", o2::soa::Index<>,
-                    myTable::Psi2,
-                    myTable::Psi3,
-                    myTable::EvtPlRes);
-}
+DECLARE_SOA_COLUMN(Psi2, psi2, Float_t);
+DECLARE_SOA_COLUMN(Psi3, psi3, Float_t);
+DECLARE_SOA_COLUMN(EvtPlRes, evtplres, Float_t);
+} // namespace myTable
+DECLARE_SOA_TABLE(MyTable, "AOD", "MYTABLE", o2::soa::Index<>,
+                  myTable::Psi2,
+                  myTable::Psi3,
+                  myTable::EvtPlRes);
+} // namespace o2::aod
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct jetChargedV2EPTable {
@@ -97,7 +97,6 @@ struct jetChargedV2EPTable {
   Produces<o2::aod::MyCollision> outputCollisions;
 
   HistogramRegistry registry;
-
 
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
   Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};

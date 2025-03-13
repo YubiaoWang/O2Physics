@@ -430,9 +430,9 @@ struct JetChargedV2 {
         histosQA.fill(HIST("histEvtPlTwistV3"), helperEP.GetEventPlane(collision.qvecRe()[detInd + 2], collision.qvecIm()[detInd + 2], nmode), collision.cent());
         histosQA.fill(HIST("histEvtPlFinalV3"), helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode), collision.cent());
 
-          histosQA.fill(HIST("histEvtPlRes_SigRefAV3"), helperEP.GetResolution(helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode), helperEP.GetEventPlane(collision.qvecRe()[RefAInd + 3], collision.qvecIm()[RefAInd + 3], nmode), nmode), collision.cent());
-          histosQA.fill(HIST("histEvtPlRes_SigRefBV3"), helperEP.GetResolution(helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode), helperEP.GetEventPlane(collision.qvecRe()[RefBInd + 3], collision.qvecIm()[RefBInd + 3], nmode), nmode), collision.cent());
-          histosQA.fill(HIST("histEvtPlRes_RefARefBV3"), helperEP.GetResolution(helperEP.GetEventPlane(collision.qvecRe()[RefAInd + 3], collision.qvecIm()[RefAInd + 3], nmode), helperEP.GetEventPlane(collision.qvecRe()[RefBInd + 3], collision.qvecIm()[RefBInd + 3], nmode), nmode), collision.cent());
+        histosQA.fill(HIST("histEvtPlRes_SigRefAV3"), helperEP.GetResolution(helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode), helperEP.GetEventPlane(collision.qvecRe()[RefAInd + 3], collision.qvecIm()[RefAInd + 3], nmode), nmode), collision.cent());
+        histosQA.fill(HIST("histEvtPlRes_SigRefBV3"), helperEP.GetResolution(helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode), helperEP.GetEventPlane(collision.qvecRe()[RefBInd + 3], collision.qvecIm()[RefBInd + 3], nmode), nmode), collision.cent());
+        histosQA.fill(HIST("histEvtPlRes_RefARefBV3"), helperEP.GetResolution(helperEP.GetEventPlane(collision.qvecRe()[RefAInd + 3], collision.qvecIm()[RefAInd + 3], nmode), helperEP.GetEventPlane(collision.qvecRe()[RefBInd + 3], collision.qvecIm()[RefBInd + 3], nmode), nmode), collision.cent());
       }
 
       if (nmode == 2) {

@@ -771,15 +771,15 @@ struct JetChargedV2 {
           float leadingJetEta = jets.iteratorAt(0).eta();
           float leadingJetPhi = jets.iteratorAt(0).phi();
           float etaBandWidth = 2 * randomConeR;
-        
+
           bool jetWasInCone = false;
           do {
             randomConeEta = randomNumber.Uniform(trackEtaMin + randomConeR, trackEtaMax - randomConeR);
             randomConePhi = randomNumber.Uniform(0.0, o2::constants::math::TwoPI);
-        
+
             float dEta = randomConeEta - leadingJetEta;
             float dPhi = RecoDecay::constrainAngle(randomConePhi - leadingJetPhi, static_cast<float>(-o2::constants::math::PI));
-        
+
             if (std::abs(dEta) > etaBandWidth && std::sqrt(dEta * dEta + dPhi * dPhi) > randomConeR + jets.iteratorAt(0).r() / 100.0) {
               break;
             }

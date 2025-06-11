@@ -499,7 +499,7 @@ struct JetChargedV2 {
   template <typename T, typename J>
   void fillInOutjetV2EP(T const& collision, J const& jets)
   {
-    float collQvecAmpDetId  = 1e-8;
+    float collQvecAmpDetId = 1e-8;
     int cfgNmodA = 2;
     int cfgNmodB = 3;
     for (uint i = 0; i < cfgnMods->size(); i++) {

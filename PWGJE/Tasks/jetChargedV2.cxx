@@ -177,6 +177,7 @@ struct JetChargedV2 {
   double evtnum = 0;
   double accptTrack = 0;
   double fitTrack = 0;
+  float collQvecAmpDetId  = 1e-8;
   TH1F* hPtsumSumptFit = nullptr;
   TH1F* hPtsumSumptFitMCP = nullptr;
   TF1* fFitModulationV2v3 = 0x0;
@@ -485,21 +486,9 @@ struct JetChargedV2 {
     return true;
   }
 
-  template <typename T, typename U>
-  bool trackIsInJet(T const& track, U const& jet)
-  {
-    for (auto const& constituentId : jet.tracksIds()) {
-      if (constituentId == track.globalIndex()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   template <typename T, typename J>
   void fillInOutjetV2EP(T const& collision, J const& jets)
   {
-    float collQvecAmpDetId = 1e-8;
     int cfgNmodA = 2;
     int cfgNmodB = 3;
     for (uint i = 0; i < cfgnMods->size(); i++) {
@@ -907,21 +896,6 @@ struct JetChargedV2 {
     registry.fill(HIST("leadJetPtMCP"), leadingJetPt);
     registry.fill(HIST("leadJetPhiMCP"), leadingJetPhi);
     registry.fill(HIST("leadJetEtaMCP"), leadingJetEta);
-  }
-
-  // create MCP h_ptsum_sumpt_fit, with number of Track
-  template <typename T, typename U>
-  void getNtrkMCP(T const& tracks, U const& jets, int& nTrk, double& evtnum, double& leadingJetEta)
-  {
-    if (jets.size() > 0) {
-      for (auto const& track : tracks) {
-        if (jetderiveddatautilities::selectTrack(track, trackSelection) && (std::fabs(track.eta() - leadingJetEta) > jetRadius) && track.pt() >= localRhoFitPtMin && track.pt() <= localRhoFitPtMax) {
-          registry.fill(HIST("h_accept_Track"), 5.5);
-          nTrk += 1;
-        }
-      }
-      registry.fill(HIST("h_mcp_evtnum_NTrk"), evtnum, nTrk);
-    }
   }
 
   template <typename U, typename T, typename J>

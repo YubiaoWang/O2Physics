@@ -13,46 +13,49 @@
 /// \file jetChargedV2.cxx
 /// \brief This file contains the implementation for the Charged Jet v2 analysis in the ALICE experiment
 
-#include <chrono>
-#include <string>
-#include <vector>
-#include <cmath>
-#include <TRandom3.h>
-#include <THn.h>
-#include <THnSparse.h>
-#include <algorithm>
+// ROOT headers
 #include <TComplex.h>
 #include <TH1F.h>
 #include <TH2D.h>
+#include <THn.h>
+#include <THnSparse.h>
 #include <TMath.h>
+#include <TRandom3.h>
 #include <TVector2.h>
 
+// STL headers
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <string>
+#include <vector>
+
+// O2 Framework
 #include "Framework/ASoA.h"
+#include "Framework/ASoAHelpers.h"
 #include "Framework/AnalysisDataModel.h"
 #include "Framework/AnalysisTask.h"
-#include "Framework/O2DatabasePDGPlugin.h"
 #include "Framework/HistogramRegistry.h"
+#include "Framework/O2DatabasePDGPlugin.h"
+#include "Framework/RunningWorkflowInfo.h"
+#include "Framework/StaticFor.h"
 #include "Framework/runDataProcessing.h"
 
-#include "PWGJE/Core/FastJetUtilities.h"
-#include "PWGJE/Core/JetFinder.h"
-#include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/DataModel/Jet.h"
-#include "PWGJE/Core/JetDerivedDataUtilities.h"
-
+// Common and PWG headers
+#include "Common/Core/EventPlaneHelper.h"
 #include "Common/Core/TrackSelection.h"
 #include "Common/Core/TrackSelectionDefaults.h"
 #include "Common/DataModel/EventSelection.h"
+#include "Common/DataModel/Qvectors.h"
 #include "Common/DataModel/TrackSelectionTables.h"
-
-#include "Framework/ASoAHelpers.h"
+#include "CommonConstants/PhysicsConstants.h"
 #include "EventFiltering/filterTables.h"
 
-#include "Framework/RunningWorkflowInfo.h"
-#include "Framework/StaticFor.h"
-#include "Common/DataModel/Qvectors.h"
-#include "Common/Core/EventPlaneHelper.h"
-#include "CommonConstants/PhysicsConstants.h"
+#include "PWGJE/Core/FastJetUtilities.h"
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
+#include "PWGJE/Core/JetFinder.h"
+#include "PWGJE/Core/JetFindingUtilities.h"
+#include "PWGJE/DataModel/Jet.h"
 
 using namespace o2;
 using namespace o2::framework;

@@ -177,7 +177,7 @@ struct JetChargedV2 {
   double evtnum = 0;
   double accptTrack = 0;
   double fitTrack = 0;
-  float collQvecAmpDetId  = 1e-8;
+  float collQvecAmpDetId = 1e-8;
   TH1F* hPtsumSumptFit = nullptr;
   TH1F* hPtsumSumptFitMCP = nullptr;
   TF1* fFitModulationV2v3 = 0x0;

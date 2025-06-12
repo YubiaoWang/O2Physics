@@ -13,7 +13,6 @@
 /// \file jetChargedV2.cxx
 /// \brief This file contains the implementation for the Charged Jet v2 analysis in the ALICE experiment
 
-// ROOT headers
 #include <TComplex.h>
 #include <TH1F.h>
 #include <TH2D.h>
@@ -23,14 +22,12 @@
 #include <TRandom3.h>
 #include <TVector2.h>
 
-// STL headers
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <string>
 #include <vector>
 
-// O2 Framework
 #include "Framework/ASoA.h"
 #include "Framework/ASoAHelpers.h"
 #include "Framework/AnalysisDataModel.h"
@@ -41,21 +38,20 @@
 #include "Framework/StaticFor.h"
 #include "Framework/runDataProcessing.h"
 
-// Common and PWG headers
+#include "PWGJE/Core/FastJetUtilities.h"
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
+#include "PWGJE/Core/JetFinder.h"
+#include "PWGJE/Core/JetFindingUtilities.h"
+#include "PWGJE/DataModel/Jet.h"
+
 #include "Common/Core/EventPlaneHelper.h"
 #include "Common/Core/TrackSelection.h"
 #include "Common/Core/TrackSelectionDefaults.h"
 #include "Common/DataModel/EventSelection.h"
 #include "Common/DataModel/Qvectors.h"
 #include "Common/DataModel/TrackSelectionTables.h"
-#include "EventFiltering/filterTables.h"
 #include "CommonConstants/PhysicsConstants.h"
-
-#include "PWGJE/Core/FastJetUtilities.h"
-#include "PWGJE/Core/JetDerivedDataUtilities.h"
-#include "PWGJE/Core/JetFinder.h"
-#include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/DataModel/Jet.h"
+#include "EventFiltering/filterTables.h"
 
 using namespace o2;
 using namespace o2::framework;

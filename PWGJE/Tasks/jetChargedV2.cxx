@@ -477,64 +477,6 @@ struct JetChargedV2 {
     return TMath::Gamma(nDF / 2., x / 2.);
   }
 
-  // leading jet fill
-  template <typename T>
-  void fillLeadingJetQA(T const& jets, double& leadingJetPt, double& leadingJetPhi, double& leadingJetEta)
-  {
-    for (const auto& jet : jets) {
-      if (jet.pt() > leadingJetPt) {
-        leadingJetPt = jet.pt();
-        leadingJetEta = jet.eta();
-        leadingJetPhi = jet.phi();
-      }
-    }
-    registry.fill(HIST("leadJetPt"), leadingJetPt);
-    registry.fill(HIST("leadJetPhi"), leadingJetPhi);
-    registry.fill(HIST("leadJetEta"), leadingJetEta);
-  }
-
-  // create h_ptsum_sumpt_fit, with number of Track
-  template <typename T, typename U>
-  void getNtrk(T const& tracks, U const& jets, int& nTrk, double& evtnum, double& leadingJetEta)
-  {
-    if (jets.size() > 0) {
-      for (auto const& track : tracks) {
-        if (jetderiveddatautilities::selectTrack(track, trackSelection) && (std::fabs(track.eta() - leadingJetEta) > jetRadius) && track.pt() >= localRhoFitPtMin && track.pt() <= localRhoFitPtMax) {
-          registry.fill(HIST("h_accept_Track"), 4.5);
-          nTrk += 1;
-        }
-      }
-      registry.fill(HIST("h_evtnum_NTrk"), evtnum, nTrk);
-    }
-  }
-
-  // fill nTrk plot for fit rho(varphi)
-  template <typename T, typename U, typename J>
-  void fillNtrkCheck(T const& collision, U const& tracks, J const& jets, TH1F* hPtsumSumptFit, double& leadingJetEta, double& evtnum)
-  {
-    if (jets.size() > 0) {
-      for (auto const& trackfit : tracks) {
-        registry.fill(HIST("h_accept_Track"), 0.5);
-        if (jetderiveddatautilities::selectTrack(trackfit, trackSelection) && (std::fabs(trackfit.eta() - leadingJetEta) > jetRadius) && trackfit.pt() >= localRhoFitPtMin && trackfit.pt() <= localRhoFitPtMax) {
-          registry.fill(HIST("h_accept_Track"), 1.5);
-        }
-      }
-
-      for (auto const& track : tracks) {
-        registry.fill(HIST("h_accept_Track"), 2.5);
-        if (jetderiveddatautilities::selectTrack(track, trackSelection) && (std::fabs(track.eta() - leadingJetEta) > jetRadius) && track.pt() >= localRhoFitPtMin && track.pt() <= localRhoFitPtMax) {
-          registry.fill(HIST("h_accept_Track"), 3.5);
-          hPtsumSumptFit->Fill(track.phi(), track.pt());
-          registry.fill(HIST("h2_phi_track_eta"), track.eta(), track.phi());
-          registry.fill(HIST("h_ptsum_sumpt"), track.phi(), track.pt());
-          registry.fill(HIST("h2_centrality_phi_w_pt"), collision.centrality(), track.phi(), track.pt());
-          registry.fill(HIST("h2_evtnum_phi_w_pt"), evtnum, track.phi(), track.pt());
-          registry.fill(HIST("Thn_evtnum_phi_centrality"), evtnum, track.phi(), collision.centrality());
-        }
-      }
-    }
-  }
-
   // MCP leading jet fill
   template <typename T>
   void fillLeadingJetQAMCP(T const& jets, double& leadingJetPt, double& leadingJetPhi, double& leadingJetEta)

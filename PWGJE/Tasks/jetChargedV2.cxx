@@ -13,20 +13,21 @@
 /// \file jetChargedV2.cxx
 /// \brief This file contains the implementation for the Charged Jet v2 analysis in the ALICE experiment
 
-#include <TComplex.h>
-#include <TH1F.h>
-#include <TH2D.h>
-#include <THn.h>
-#include <THnSparse.h>
-#include <TMath.h>
-#include <TRandom3.h>
-#include <TVector2.h>
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <string>
-#include <vector>
+#include "PWGJE/Core/FastJetUtilities.h"
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
+#include "PWGJE/Core/JetFinder.h"
+#include "PWGJE/Core/JetFindingUtilities.h"
+#include "PWGJE/DataModel/Jet.h"
 
+#include "Common/Core/EventPlaneHelper.h"
+#include "Common/Core/TrackSelection.h"
+#include "Common/Core/TrackSelectionDefaults.h"
+#include "Common/DataModel/EventSelection.h"
+#include "Common/DataModel/Qvectors.h"
+#include "Common/DataModel/TrackSelectionTables.h"
+#include "EventFiltering/filterTables.h"
+
+#include "CommonConstants/PhysicsConstants.h"
 #include "Framework/ASoA.h"
 #include "Framework/ASoAHelpers.h"
 #include "Framework/AnalysisDataModel.h"
@@ -37,21 +38,20 @@
 #include "Framework/StaticFor.h"
 #include "Framework/runDataProcessing.h"
 
-#include "Common/Core/EventPlaneHelper.h"
-#include "Common/Core/TrackSelection.h"
-#include "Common/Core/TrackSelectionDefaults.h"
-#include "Common/DataModel/EventSelection.h"
-#include "Common/DataModel/Qvectors.h"
-#include "Common/DataModel/TrackSelectionTables.h"
-#include "CommonConstants/PhysicsConstants.h"
+#include <TComplex.h>
+#include <TH1F.h>
+#include <TH2D.h>
+#include <THn.h>
+#include <THnSparse.h>
+#include <TMath.h>
+#include <TRandom3.h>
+#include <TVector2.h>
 
-#include "EventFiltering/filterTables.h"
-
-#include "PWGJE/Core/FastJetUtilities.h"
-#include "PWGJE/Core/JetDerivedDataUtilities.h"
-#include "PWGJE/Core/JetFinder.h"
-#include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/DataModel/Jet.h"
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <string>
+#include <vector>
 
 using namespace o2;
 using namespace o2::framework;
@@ -476,6 +476,22 @@ struct JetChargedV2 {
     return TMath::Gamma(nDF / 2., x / 2.);
   }
 
+  // leading jet fill
+  template <typename T>
+  void fillLeadingJetQA(T const& jets, double& leadingJetPt, double& leadingJetPhi, double& leadingJetEta)
+  {
+    for (const auto& jet : jets) {
+      if (jet.pt() > leadingJetPt) {
+        leadingJetPt = jet.pt();
+        leadingJetEta = jet.eta();
+        leadingJetPhi = jet.phi();
+      }
+    }
+    registry.fill(HIST("leadJetPt"), leadingJetPt);
+    registry.fill(HIST("leadJetPhi"), leadingJetPhi);
+    registry.fill(HIST("leadJetEta"), leadingJetEta);
+  }
+
   // MCP leading jet fill
   template <typename T>
   void fillLeadingJetQAMCP(T const& jets, double& leadingJetPt, double& leadingJetPhi, double& leadingJetEta)
@@ -790,6 +806,11 @@ struct JetChargedV2 {
     }
     registry.fill(HIST("h_collisions"), 2.5);
 
+    double leadingJetPt = -1;
+    double leadingJetPhi = -1;
+    double leadingJetEta = -1;
+    fillLeadingJetQA(jets, leadingJetPt, leadingJetPhi, leadingJetEta);
+
     double ep2 = 0.;
     double ep3 = 0.;
     int cfgNmodA = 2;
@@ -1041,6 +1062,11 @@ struct JetChargedV2 {
       }
       fillJetAreaSubHistograms(jet, collision.centrality(), collision.rho());
     }
+
+    double leadingJetPt = -1;
+    double leadingJetPhi = -1;
+    double leadingJetEta = -1;
+    fillLeadingJetQA(jets, leadingJetPt, leadingJetPhi, leadingJetEta);
 
     double ep2 = 0.;
     double ep3 = 0.;

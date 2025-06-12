@@ -21,27 +21,11 @@
 #include <TMath.h>
 #include <TRandom3.h>
 #include <TVector2.h>
-
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <string>
 #include <vector>
-
-#include "PWGJE/Core/FastJetUtilities.h"
-#include "PWGJE/Core/JetDerivedDataUtilities.h"
-#include "PWGJE/Core/JetFinder.h"
-#include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/DataModel/Jet.h"
-
-#include "Common/Core/EventPlaneHelper.h"
-#include "Common/Core/TrackSelection.h"
-#include "Common/Core/TrackSelectionDefaults.h"
-#include "Common/DataModel/EventSelection.h"
-#include "Common/DataModel/Qvectors.h"
-#include "Common/DataModel/TrackSelectionTables.h"
-#include "CommonConstants/PhysicsConstants.h"
-#include "EventFiltering/filterTables.h"
 
 #include "Framework/ASoA.h"
 #include "Framework/ASoAHelpers.h"
@@ -52,6 +36,22 @@
 #include "Framework/RunningWorkflowInfo.h"
 #include "Framework/StaticFor.h"
 #include "Framework/runDataProcessing.h"
+
+#include "Common/Core/EventPlaneHelper.h"
+#include "Common/Core/TrackSelection.h"
+#include "Common/Core/TrackSelectionDefaults.h"
+#include "Common/DataModel/EventSelection.h"
+#include "Common/DataModel/Qvectors.h"
+#include "Common/DataModel/TrackSelectionTables.h"
+#include "CommonConstants/PhysicsConstants.h"
+
+#include "EventFiltering/filterTables.h"
+
+#include "PWGJE/Core/FastJetUtilities.h"
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
+#include "PWGJE/Core/JetFinder.h"
+#include "PWGJE/Core/JetFindingUtilities.h"
+#include "PWGJE/DataModel/Jet.h"
 
 using namespace o2;
 using namespace o2::framework;

@@ -1406,17 +1406,17 @@ struct JetChargedV2 {
           }
         }
       }
-  
+
       const char* fitFunctionV2v3P = "[0] * (1. + 2. * ([1] * std::cos(2. * (x - [2])) + [3] * std::cos(3. * (x - [4]))))";
       fFitModulationV2v3P = new TF1("fit_kV3", fitFunctionV2v3P, 0, o2::constants::math::TwoPI);
       //=========================< set parameter >=========================//
       fFitModulationV2v3P->SetParameter(0, 1.);
       fFitModulationV2v3P->SetParameter(1, 0.01);
       fFitModulationV2v3P->SetParameter(3, 0.01);
-  
+
       double ep2fix = 0.;
       double ep3fix = 0.;
-  
+
       if (ep2 < 0) {
         ep2fix = RecoDecay::constrainAngle(ep2);
         fFitModulationV2v3P->FixParameter(2, ep2fix);
@@ -1429,9 +1429,9 @@ struct JetChargedV2 {
       } else {
         fFitModulationV2v3P->FixParameter(4, ep3);
       }
-  
+
       hPtsumSumptFitMCP->Fit(fFitModulationV2v3P, "Q", "ep", 0, o2::constants::math::TwoPI);
-  
+
       double temppara[5];
       temppara[0] = fFitModulationV2v3P->GetParameter(0);
       temppara[1] = fFitModulationV2v3P->GetParameter(1);
@@ -1446,15 +1446,15 @@ struct JetChargedV2 {
       registry.fill(HIST("h_mcp_fitparaPsi2_evtnum"), evtnum, temppara[2]);
       registry.fill(HIST("h_mcp_fitparav3obs_evtnum"), evtnum, temppara[3]);
       registry.fill(HIST("h_mcp_fitparaPsi3_evtnum"), evtnum, temppara[4]);
-  
+
       registry.fill(HIST("h_mcp_v2obs_centrality"), collision.centrality(), temppara[1]);
       registry.fill(HIST("h_mcp_v3obs_centrality"), collision.centrality(), temppara[3]);
       registry.fill(HIST("h_mcp_evtnum_centrlity"), evtnum, collision.centrality());
-  
+
       for (uint i = 0; i < cfgnMods->size(); i++) {
         int nmode = cfgnMods->at(i);
         int detInd = detId * 4 + cfgnTotalSystem * 4 * (nmode - 2);
-  
+
         for (auto const& jet : jets) {
           if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
             continue;
@@ -1465,22 +1465,22 @@ struct JetChargedV2 {
           if (jet.r() != round(selectedJetsRadius * 100.0f)) {
             continue;
           }
-  
+
           double integralValue = fFitModulationV2v3P->Integral(jet.phi() - jetRadius, jet.phi() + jetRadius);
           double rholocal = collision.rho() / (2 * jetRadius * temppara[0]) * integralValue;
           registry.fill(HIST("h3_mcp_centrality_localrho_phi"), collision.centrality(), rholocal, jet.phi() - ep2);
-  
+
           if (nmode == cfgNmodA) {
             registry.fill(HIST("h_mcp_jet_pt_rholocal"), jet.pt() - (rholocal * jet.area()), 1.0);
-  
+
             double phiMinusPsi2;
             if (collision.qvecAmp()[detId] < collQvecAmpDetId) {
               continue;
             }
             phiMinusPsi2 = jet.phi() - ep2;
-  
+
             registry.fill(HIST("h2_mcp_phi_rholocal"), jet.phi() - ep2, rholocal, 1.0);
-  
+
             if ((phiMinusPsi2 < o2::constants::math::PIQuarter) || (phiMinusPsi2 >= evtPlnAngleA * o2::constants::math::PIQuarter) || (phiMinusPsi2 >= evtPlnAngleB * o2::constants::math::PIQuarter && phiMinusPsi2 < evtPlnAngleC * o2::constants::math::PIQuarter)) {
               registry.fill(HIST("h_mcp_jet_pt_in_plane_v2_rho"), jet.pt() - (rholocal * jet.area()), 1.0);
               registry.fill(HIST("h2_mcp_centrality_jet_pt_in_plane_v2_rho"), collision.centrality(), jet.pt() - (rholocal * jet.area()), 1.0);
@@ -1495,7 +1495,7 @@ struct JetChargedV2 {
             }
             ep3 = helperEP.GetEventPlane(collision.qvecRe()[detInd], collision.qvecIm()[detInd], nmode);
             phiMinusPsi3 = jet.phi() - ep3;
-  
+
             if ((phiMinusPsi3 < o2::constants::math::PIQuarter) || (phiMinusPsi3 >= evtPlnAngleA * o2::constants::math::PIQuarter) || (phiMinusPsi3 >= evtPlnAngleB * o2::constants::math::PIQuarter && phiMinusPsi3 < evtPlnAngleC * o2::constants::math::PIQuarter)) {
               registry.fill(HIST("h_mcp_jet_pt_in_plane_v3_rho"), jet.pt() - (rholocal * jet.area()), 1.0);
               registry.fill(HIST("h2_mcp_centrality_jet_pt_in_plane_v3_rho"), collision.centrality(), jet.pt() - (rholocal * jet.area()), 1.0);
@@ -1514,12 +1514,12 @@ struct JetChargedV2 {
         float randomConePt = 0;
         double integralValueRC = fFitModulationV2v3P->Integral(randomConePhi - randomConeR, randomConePhi + randomConeR);
         double rholocalRC = collision.rho() / (2 * randomConeR * temppara[0]) * integralValueRC;
-  
+
         int nmode = cfgnMods->at(i);
         if (nmode == cfgNmodA) {
           double rcPhiPsi2;
           rcPhiPsi2 = randomConePhi - ep2;
-  
+
           for (auto const& track : tracks) {
             if (jetderiveddatautilities::selectTrack(track, trackSelection)) {
               float dPhi = RecoDecay::constrainAngle(track.phi() - randomConePhi, static_cast<float>(-o2::constants::math::PI));
@@ -1530,12 +1530,12 @@ struct JetChargedV2 {
             }
           }
           registry.fill(HIST("h3_mcp_centrality_deltapT_RandomCornPhi_localrhovsphi"), collision.centrality(), randomConePt - o2::constants::math::PI * randomConeR * randomConeR * rholocalRC, rcPhiPsi2, 1.0);
-  
+
           // removing the leading jet from the random cone
           if (jets.size() > 0) { // if there are no jets in the acceptance (from the jetfinder cuts) then there can be no leading jet
             float dPhiLeadingJet = RecoDecay::constrainAngle(jets.iteratorAt(0).phi() - randomConePhi, static_cast<float>(-o2::constants::math::PI));
             float dEtaLeadingJet = jets.iteratorAt(0).eta() - randomConeEta;
-  
+
             bool jetWasInCone = false;
             while ((randomConeLeadJetDeltaR <= 0 && (std::sqrt(dEtaLeadingJet * dEtaLeadingJet + dPhiLeadingJet * dPhiLeadingJet) < jets.iteratorAt(0).r() / 100.0 + randomConeR)) || (randomConeLeadJetDeltaR > 0 && (std::sqrt(dEtaLeadingJet * dEtaLeadingJet + dPhiLeadingJet * dPhiLeadingJet) < randomConeLeadJetDeltaR))) {
               jetWasInCone = true;

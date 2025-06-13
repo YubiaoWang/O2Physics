@@ -520,7 +520,7 @@ struct JetChargedV2 {
           registry.fill(HIST("h_accept_Track"), 1.5);
         }
       }
-    
+
       for (auto const& track : tracks) {
         registry.fill(HIST("h_accept_Track"), 2.5);
         if (jetderiveddatautilities::selectTrack(track, trackSelection) && (std::fabs(track.eta() - leadingJetEta) > jetRadius) && track.pt() >= localRhoFitPtMin && track.pt() <= localRhoFitPtMax) {
@@ -550,11 +550,10 @@ struct JetChargedV2 {
     registry.fill(HIST("leadJetPtMCP"), leadingJetPt);
     registry.fill(HIST("leadJetPhiMCP"), leadingJetPhi);
     registry.fill(HIST("leadJetEtaMCP"), leadingJetEta);
-  }
-
+  } 
 
   template <typename U, typename T, typename J>
-  void fitFncMCP(U const& collision, T const& tracks, J const& jets, TH1F* hPtsumSumptFitMCP, double leadingJetEta, bool mcLevelIsParticleLevel,  float weight = 1.0)
+  void fitFncMCP(U const& collision, T const& tracks, J const& jets, TH1F* hPtsumSumptFitMCP, double leadingJetEta, bool mcLevelIsParticleLevel, float weight = 1.0)
   {
     double ep2 = 0.;
     double ep3 = 0.;
@@ -567,11 +566,11 @@ struct JetChargedV2 {
       int nmode = cfgnMods->at(i);
       int detInd = detId * 4 + cfgnTotalSystem * 4 * (nmode - 2);
       if (nmode == cfgNmodA) {
-        if (collision.qvecAmp()[detId] > 1e-8) {
+        if (collision.qvecAmp()[detId] > collQvecAmpDetId) {
           ep2 = helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode);
         }
       } else if (nmode == cfgNmodB) {
-        if (collision.qvecAmp()[detId] > 1e-8) {
+        if (collision.qvecAmp()[detId] > collQvecAmpDetId) {
           ep3 = helperEP.GetEventPlane(collision.qvecRe()[detInd + 3], collision.qvecIm()[detInd + 3], nmode);
         }
       }
@@ -645,7 +644,7 @@ struct JetChargedV2 {
           registry.fill(HIST("h_mcp_jet_pt_rholocal"), jet.pt() - (rholocal * jet.area()), weight);
 
           double phiMinusPsi2;
-          if (collision.qvecAmp()[detId] < 1e-8) {
+          if (collision.qvecAmp()[detId] < collQvecAmpDetId) {
             continue;
           }
           phiMinusPsi2 = jet.phi() - ep2;
@@ -661,7 +660,7 @@ struct JetChargedV2 {
           }
         } else if (nmode == cfgNmodB) {
           double phiMinusPsi3;
-          if (collision.qvecAmp()[detId] < 1e-8) {
+          if (collision.qvecAmp()[detId] < collQvecAmpDetId) {
             continue;
           }
           ep3 = helperEP.GetEventPlane(collision.qvecRe()[detInd], collision.qvecIm()[detInd], nmode);
@@ -1554,6 +1553,7 @@ struct JetChargedV2 {
                          aod::JetParticles const&)
   {
     bool mcLevelIsParticleLevel = true;
+    int acceptSplitCollInMCP = 2;
 
     registry.fill(HIST("h_mcColl_counts_areasub"), 0.5);
     if (std::abs(mccollision.posZ()) > vertexZCut) {
@@ -1572,7 +1572,7 @@ struct JetChargedV2 {
     bool hasSel8Coll = false;
     bool centralityIsGood = false;
     bool occupancyIsGood = false;
-    if (acceptSplitCollisions == 2) {
+    if (acceptSplitCollisions == acceptSplitCollInMCP) {
       if (jetderiveddatautilities::selectCollision(collisions.begin(), eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }

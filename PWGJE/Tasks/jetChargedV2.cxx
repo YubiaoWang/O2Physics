@@ -550,7 +550,7 @@ struct JetChargedV2 {
     registry.fill(HIST("leadJetPtMCP"), leadingJetPt);
     registry.fill(HIST("leadJetPhiMCP"), leadingJetPhi);
     registry.fill(HIST("leadJetEtaMCP"), leadingJetEta);
-  } 
+  }
 
   template <typename U, typename T, typename J>
   void fitFncMCP(U const& collision, T const& tracks, J const& jets, TH1F* hPtsumSumptFitMCP, double leadingJetEta, bool mcLevelIsParticleLevel, float weight = 1.0)

@@ -128,7 +128,6 @@ struct JetChargedV2 {
 
   Configurable<bool> cfgChkFitQuality{"cfgChkFitQuality", false, "check fit quality"};
 
-
   template <typename T>
   int getDetId(const T& name)
   {

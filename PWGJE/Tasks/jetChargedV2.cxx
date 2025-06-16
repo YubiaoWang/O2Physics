@@ -126,6 +126,9 @@ struct JetChargedV2 {
   Configurable<float> pTHatMaxMCP{"pTHatMaxMCP", 999.0, "maximum fraction of hard scattering for jet acceptance in particle MC"};
   Configurable<bool> checkLeadConstituentPtForMcpJets{"checkLeadConstituentPtForMcpJets", false, "flag to choose whether particle level jets should have their lead track pt above leadingConstituentPtMin to be accepted; off by default, as leadingConstituentPtMin cut is only applied on MCD jets for the Pb-Pb analysis using pp MC anchored to Pb-Pb for the response matrix"};
 
+  Configurable<bool> cfgChkFitQuality{"cfgChkFitQuality", false, "check fit quality"};
+
+
   template <typename T>
   int getDetId(const T& name)
   {
@@ -244,7 +247,6 @@ struct JetChargedV2 {
       registry.get<TH1>(HIST("h_accept_Track"))->GetXaxis()->SetBinLabel(4, "afterSumptFit");
       registry.get<TH1>(HIST("h_accept_Track"))->GetXaxis()->SetBinLabel(5, "getNtrk");
       registry.get<TH1>(HIST("h_accept_Track"))->GetXaxis()->SetBinLabel(6, "getNtrkMCP");
-      registry.add("h_ptsum_collnum", "ptsum collnum;collnum;entries", {HistType::kTH1F, {{40, 0.0, 40}}});
 
       //< fit quality >//
       registry.add("h_PvalueCDF_CombinFit", "cDF #chi^{2}; entries", {HistType::kTH1F, {{50, 0, 1}}});
@@ -264,8 +266,6 @@ struct JetChargedV2 {
       registry.add("h_fitparaRho_evtnum", "fitparameter #rho_{0} vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
       registry.add("h_fitparaPsi2_evtnum", "fitparameter #Psi_{2} vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
       registry.add("h_fitparaPsi3_evtnum", "fitparameter #Psi_{3} vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
-      registry.add("h_fitparav2obs_evtnum", "fitparameter v2obs vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
-      registry.add("h_fitparav3obs_evtnum", "fitparameter v3obs vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
 
       registry.add("h2_phi_rholocal", "#varphi vs #rho(#varphi); #varphi - #Psi_{EP,2};  #rho(#varphi) ", {HistType::kTH2F, {{40, 0., o2::constants::math::TwoPI}, {210, -10.0, 200.0}}});
       registry.add("h2_rholocal_cent", "#varphi vs #rho(#varphi); #cent;  #rho(#varphi) ", {HistType::kTH2F, {{100, 0., 100}, {210, -10.0, 200.0}}});
@@ -308,28 +308,24 @@ struct JetChargedV2 {
     }
 
     if (doprocessSigmaPtMCP) {
+      registry.add("h_jet_pt_part_rhoareasubtracted", "part jet corr pT;#it{p}_{T,jet}^{part} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxisRhoAreaSub}});
       registry.add("h_jet_eta_part_rhoareasubtracted", "part jet #eta;#eta^{part}; counts", {HistType::kTH1F, {jetEtaAxis}});
       registry.add("h_jet_phi_part_rhoareasubtracted", "part jet #varphi;#varphi^{part}; counts", {HistType::kTH1F, {phiAxis}});
-      registry.add("h2_jet_pt_part_jet_area_part_rhoareasubtracted", "part jet #it{p}_{T,jet} vs. Area_{jet}; #it{p}_{T,jet}^{part} (GeV/#it{c}); Area_{jet}^{part}", {HistType::kTH2F, {jetPtAxisRhoAreaSub, {150, 0., 1.5}}});
-      registry.add("h3_jet_pt_jet_eta_jet_phi_part_rhoareasubtracted", "part jet pt vs. eta vs.phi", {HistType::kTH3F, {jetPtAxisRhoAreaSub, jetEtaAxis, phiAxis}});
+
       registry.add("leadJetPtMCP", "MCP leadJet Pt ", {HistType::kTH1F, {{200, 0., 200.0}}});
       registry.add("leadJetPhiMCP", "MCP leadJet constituent #phi ", {HistType::kTH1F, {{80, -1.0, 7.}}});
       registry.add("leadJetEtaMCP", "MCP leadJet constituent #eta ", {HistType::kTH1F, {{100, -1.0, 1.0}}});
-      registry.add("h_mcp_evtnum_NTrk", "MCP eventNumber vs Number of Track ; #eventNumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
-      registry.add("h3_mcp_centrality_localrho_phi", "MCP centrality; #rho_{local}; #Delta#varphi_{jet}", {HistType::kTH3F, {{120, -10.0, 110.0}, {200, 0.0, 200.0}, {40, 0., o2::constants::math::TwoPI}}});
-      registry.add("h_mcp_jet_pt_rholocal", "jet pT rholocal;#it{p}_{T,jet} (GeV/#it{c});entries", {HistType::kTH1F, {jetPtAxisRhoAreaSub}});
+
       registry.add("h2_mcp_phi_rholocal", "#varphi vs #rho(#varphi); #varphi - #Psi_{EP,2};  #rho(#varphi) ", {HistType::kTH2F, {{40, 0., o2::constants::math::TwoPI}, {210, -10.0, 200.0}}});
+      registry.add("h2_mcp_centrality_rholocal", "#varphi vs #rho(#varphi); #varphi - #Psi_{EP,2};  #rho(#varphi) ", {HistType::kTH2F, {{120, -10.0, 110.0}, {210, -10.0, 200.0}}});
+      registry.add("h_mcp_jet_pt_rholocal", "jet pT rholocal;#it{p}_{T,jet} (GeV/#it{c});entries", {HistType::kTH1F, {jetPtAxisRhoAreaSub}});
       //< MCP fit test >//
-      registry.add("h_mcp_ptsum_sumpt", "jet sumpt;sum p_{T};entries", {HistType::kTH1F, {{40, 0., o2::constants::math::TwoPI}}});
-      registry.add("h2_mcp_phi_track_eta", "phi vs track eta; #eta (GeV/#it{c}); #varphi", {HistType::kTH2F, {{100, -1.0, 1.0}, {40, 0., o2::constants::math::TwoPI}}});
       registry.add("h_mcp_evtnum_centrlity", "eventNumber vs centrality ; #eventNumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
       registry.add("h_mcp_v2obs_centrality", "fitparameter v2obs vs centrality ; #centrality", {HistType::kTProfile, {cfgAxisVnCent}});
       registry.add("h_mcp_v3obs_centrality", "fitparameter v3obs vs centrality ; #centrality", {HistType::kTProfile, {cfgAxisVnCent}});
       registry.add("h_mcp_fitparaRho_evtnum", "fitparameter #rho_{0} vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
       registry.add("h_mcp_fitparaPsi2_evtnum", "fitparameter #Psi_{2} vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
       registry.add("h_mcp_fitparaPsi3_evtnum", "fitparameter #Psi_{3} vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
-      registry.add("h_mcp_fitparav2obs_evtnum", "fitparameter v2obs vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
-      // registry.add("h_mcp_fitparav3obs_evtnum", "fitparameter v3obs vs evtnum ; #eventnumber", {HistType::kTH1F, {{1000, 0.0, 1000}}});
 
       registry.add("h_mcp_jet_pt_in_plane_v2_rho", "jet pT;#it{p}^{in-plane}_{T,jet} (GeV/#it{c});entries", {HistType::kTH1F, {jetPtAxisRhoAreaSub}});
       registry.add("h_mcp_jet_pt_out_of_plane_v2_rho", "jet pT;#it{p}^{out-of-plane}_{T,jet} (GeV/#it{c});entries", {HistType::kTH1F, {jetPtAxisRhoAreaSub}});
@@ -363,8 +359,6 @@ struct JetChargedV2 {
       registry.get<TH1>(HIST("h_accept_Track"))->GetXaxis()->SetBinLabel(4, "afterSumptFit");
       registry.get<TH1>(HIST("h_accept_Track"))->GetXaxis()->SetBinLabel(5, "getNtrk");
       registry.get<TH1>(HIST("h_accept_Track"))->GetXaxis()->SetBinLabel(6, "getNtrkMCP");
-      //< fit test >//
-      registry.add("h_ptsum_collnum", "ptsum collnum;collnum;entries", {HistType::kTH1F, {{40, 0.0, 40}}});
     }
 
     //< track test >//
@@ -576,11 +570,8 @@ struct JetChargedV2 {
       return;
     }
     registry.fill(HIST("h_mcp_fitparaRho_evtnum"), evtnum, temppara[0]);
-    registry.fill(HIST("h_mcp_fitparav2obs_evtnum"), evtnum, temppara[1]);
     registry.fill(HIST("h_mcp_fitparaPsi2_evtnum"), evtnum, temppara[2]);
-    registry.fill(HIST("h_mcp_fitparav3obs_evtnum"), evtnum, temppara[3]);
     registry.fill(HIST("h_mcp_fitparaPsi3_evtnum"), evtnum, temppara[4]);
-
     registry.fill(HIST("h_mcp_v2obs_centrality"), collision.centrality(), temppara[1]);
     registry.fill(HIST("h_mcp_v3obs_centrality"), collision.centrality(), temppara[3]);
     registry.fill(HIST("h_mcp_evtnum_centrlity"), evtnum, collision.centrality());
@@ -602,8 +593,8 @@ struct JetChargedV2 {
 
         double integralValue = fFitModulationV2v3P->Integral(jet.phi() - jetRadius, jet.phi() + jetRadius);
         double rholocal = collision.rho() / (2 * jetRadius * temppara[0]) * integralValue;
-        registry.fill(HIST("h3_mcp_centrality_localrho_phi"), collision.centrality(), rholocal, jet.phi() - ep2, weight);
-
+        registry.fill(HIST("h2_mcp_phi_rholocal"), jet.phi() - ep2, rholocal, weight);
+        registry.fill(HIST("h2_mcp_centrality_rholocal"), collision.centrality(), rholocal, weight);
         if (nmode == cfgNmodA) {
           registry.fill(HIST("h_mcp_jet_pt_rholocal"), jet.pt() - (rholocal * jet.area()), weight);
 
@@ -612,9 +603,6 @@ struct JetChargedV2 {
             continue;
           }
           phiMinusPsi2 = jet.phi() - ep2;
-
-          registry.fill(HIST("h2_mcp_phi_rholocal"), jet.phi() - ep2, rholocal, weight);
-
           if ((phiMinusPsi2 < o2::constants::math::PIQuarter) || (phiMinusPsi2 >= evtPlnAngleA * o2::constants::math::PIQuarter) || (phiMinusPsi2 >= evtPlnAngleB * o2::constants::math::PIQuarter && phiMinusPsi2 < evtPlnAngleC * o2::constants::math::PIQuarter)) {
             registry.fill(HIST("h_mcp_jet_pt_in_plane_v2_rho"), jet.pt() - (rholocal * jet.area()), weight);
             registry.fill(HIST("h2_mcp_centrality_jet_pt_in_plane_v2_rho"), collision.centrality(), jet.pt() - (rholocal * jet.area()), weight);
@@ -731,11 +719,10 @@ struct JetChargedV2 {
     if (jet.r() == round(selectedJetsRadius * 100.0f)) {
       // fill mcp jet histograms
       double jetcorrpt = jet.pt() - (rho * jet.area());
-      registry.fill(HIST("h3_jet_pt_jet_eta_jet_phi_part_rhoareasubtracted"), jetcorrpt, jet.eta(), jet.phi(), weight);
+      registry.fill(HIST("h_jet_pt_part_rhoareasubtracted"), jetcorrpt, weight);
       if (jetcorrpt > 0) {
         registry.fill(HIST("h_jet_eta_part_rhoareasubtracted"), jet.eta(), weight);
         registry.fill(HIST("h_jet_phi_part_rhoareasubtracted"), jet.phi(), weight);
-        registry.fill(HIST("h2_jet_pt_part_jet_area_part_rhoareasubtracted"), jetcorrpt, jet.area(), weight);
       }
     }
   }
@@ -1005,8 +992,6 @@ struct JetChargedV2 {
 
     fillNtrkCheck(tracks, jets, hPtsumSumptFit, leadingJetEta);
 
-    registry.fill(HIST("h_ptsum_collnum"), 0.5);
-
     double ep2 = 0.;
     double ep3 = 0.;
     int cfgNmodA = 2;
@@ -1061,11 +1046,8 @@ struct JetChargedV2 {
     temppara[4] = fFitModulationV2v3->GetParameter(4);
 
     registry.fill(HIST("h_fitparaRho_evtnum"), evtnum, temppara[0]);
-    registry.fill(HIST("h_fitparav2obs_evtnum"), evtnum, temppara[1]);
     registry.fill(HIST("h_fitparaPsi2_evtnum"), evtnum, temppara[2]);
-    registry.fill(HIST("h_fitparav3obs_evtnum"), evtnum, temppara[3]);
     registry.fill(HIST("h_fitparaPsi3_evtnum"), evtnum, temppara[4]);
-
     registry.fill(HIST("h_v2obs_centrality"), collision.centrality(), temppara[1]);
     registry.fill(HIST("h_v3obs_centrality"), collision.centrality(), temppara[3]);
     registry.fill(HIST("h_evtnum_centrlity"), evtnum, collision.centrality());
@@ -1092,21 +1074,30 @@ struct JetChargedV2 {
     chiSqr = chi2;
     cDF = 1. - chiSquareCDF(nDF, chiSqr);
 
-    registry.fill(HIST("h_PvalueCDF_CombinFit"), cDF);
-    registry.fill(HIST("h2_PvalueCDFCent_CombinFit"), collision.centrality(), cDF);
-    registry.fill(HIST("h2_Chi2Cent_CombinFit"), collision.centrality(), chiSqr / (static_cast<float>(nDF)));
-    registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));
-    double evtcent = collision.centrality();
     int evtCentAreaMin = 0;
     int evtCentAreaMax = 5;
     int evtMidAreaMin = 30;
     int evtMidAreaMax = 50;
-    if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
-      registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
-
-    } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
-      registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
+    double evtcent = collision.centrality();
+    if (cfgChkFitQuality) {
+      registry.fill(HIST("h_PvalueCDF_CombinFit"), cDF);
+      registry.fill(HIST("h2_PvalueCDFCent_CombinFit"), collision.centrality(), cDF);
+      registry.fill(HIST("h2_Chi2Cent_CombinFit"), collision.centrality(), chiSqr / (static_cast<float>(nDF)));
+      registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));  
+      if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
+        registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
+  
+      } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
+        registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
+      }
+      if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
+        registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
+  
+      } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
+        registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
+      }
     }
+
     for (uint i = 0; i < cfgnMods->size(); i++) {
       int nmode = cfgnMods->at(i);
       int detInd = detId * 4 + cfgnTotalSystem * 4 * (nmode - 2);
@@ -1259,8 +1250,6 @@ struct JetChargedV2 {
 
     fillNtrkCheck(tracks, jets, hPtsumSumptFit, leadingJetEta);
 
-    registry.fill(HIST("h_ptsum_collnum"), 0.5);
-
     double ep2 = 0.;
     double ep3 = 0.;
     int cfgNmodA = 2;
@@ -1315,11 +1304,8 @@ struct JetChargedV2 {
     temppara[4] = fFitModulationV2v3->GetParameter(4);
 
     registry.fill(HIST("h_fitparaRho_evtnum"), evtnum, temppara[0]);
-    registry.fill(HIST("h_fitparav2obs_evtnum"), evtnum, temppara[1]);
     registry.fill(HIST("h_fitparaPsi2_evtnum"), evtnum, temppara[2]);
-    registry.fill(HIST("h_fitparav3obs_evtnum"), evtnum, temppara[3]);
     registry.fill(HIST("h_fitparaPsi3_evtnum"), evtnum, temppara[4]);
-
     registry.fill(HIST("h_v2obs_centrality"), collision.centrality(), temppara[1]);
     registry.fill(HIST("h_v3obs_centrality"), collision.centrality(), temppara[3]);
     registry.fill(HIST("h_evtnum_centrlity"), evtnum, collision.centrality());
@@ -1346,21 +1332,24 @@ struct JetChargedV2 {
     chiSqr = chi2;
     cDF = 1. - chiSquareCDF(nDF, chiSqr);
 
-    registry.fill(HIST("h_PvalueCDF_CombinFit"), cDF);
-    registry.fill(HIST("h2_PvalueCDFCent_CombinFit"), collision.centrality(), cDF);
-    registry.fill(HIST("h2_Chi2Cent_CombinFit"), collision.centrality(), chiSqr / (static_cast<float>(nDF)));
-    registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));
-    double evtcent = collision.centrality();
     int evtCentAreaMin = 0;
     int evtCentAreaMax = 5;
     int evtMidAreaMin = 30;
     int evtMidAreaMax = 50;
-    if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
-      registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
-
-    } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
-      registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
+    double evtcent = collision.centrality();
+    if (cfgChkFitQuality) {
+      registry.fill(HIST("h_PvalueCDF_CombinFit"), cDF);
+      registry.fill(HIST("h2_PvalueCDFCent_CombinFit"), collision.centrality(), cDF);
+      registry.fill(HIST("h2_Chi2Cent_CombinFit"), collision.centrality(), chiSqr / (static_cast<float>(nDF)));
+      registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));  
+      if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
+        registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
+  
+      } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
+        registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
+      }
     }
+
     for (uint i = 0; i < cfgnMods->size(); i++) {
       int nmode = cfgnMods->at(i);
       int detInd = detId * 4 + cfgnTotalSystem * 4 * (nmode - 2);
@@ -1562,11 +1551,9 @@ struct JetChargedV2 {
       if (jets.size() > 0) {
         for (auto const& track : collTracks) {
           if (jetderiveddatautilities::selectTrack(track, trackSelection) && (std::fabs(track.eta() - leadingJetEta) > jetRadius) && track.pt() >= localRhoFitPtMin && track.pt() <= localRhoFitPtMax) {
-            registry.fill(HIST("h_accept_Track"), 5.5);
             nTrk += 1;
           }
         }
-        registry.fill(HIST("h_mcp_evtnum_NTrk"), evtnum, nTrk);
       }
       if (nTrk <= 0) {
         return;
@@ -1577,13 +1564,9 @@ struct JetChargedV2 {
         for (auto const& track : collTracks) {
           if (jetderiveddatautilities::selectTrack(track, trackSelection) && (std::fabs(track.eta() - leadingJetEta) > jetRadius) && track.pt() >= localRhoFitPtMin && track.pt() <= localRhoFitPtMax) {
             hPtsumSumptFitMCP->Fill(track.phi(), track.pt());
-            registry.fill(HIST("h2_mcp_phi_track_eta"), track.eta(), track.phi());
-            registry.fill(HIST("h_mcp_ptsum_sumpt"), track.phi(), track.pt());
           }
         }
       }
-
-      registry.fill(HIST("h_ptsum_collnum"), 0.5);
       fitFncMCP(collision, tracks, jets, hPtsumSumptFitMCP, leadingJetEta, mcLevelIsParticleLevel);
     }
 

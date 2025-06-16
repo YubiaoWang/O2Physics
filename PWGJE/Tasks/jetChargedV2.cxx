@@ -1083,16 +1083,16 @@ struct JetChargedV2 {
       registry.fill(HIST("h_PvalueCDF_CombinFit"), cDF);
       registry.fill(HIST("h2_PvalueCDFCent_CombinFit"), collision.centrality(), cDF);
       registry.fill(HIST("h2_Chi2Cent_CombinFit"), collision.centrality(), chiSqr / (static_cast<float>(nDF)));
-      registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));  
+      registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));
       if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
         registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
-  
+
       } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
         registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
       }
       if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
         registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
-  
+
       } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
         registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
       }
@@ -1341,10 +1341,10 @@ struct JetChargedV2 {
       registry.fill(HIST("h_PvalueCDF_CombinFit"), cDF);
       registry.fill(HIST("h2_PvalueCDFCent_CombinFit"), collision.centrality(), cDF);
       registry.fill(HIST("h2_Chi2Cent_CombinFit"), collision.centrality(), chiSqr / (static_cast<float>(nDF)));
-      registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));  
+      registry.fill(HIST("h2_PChi2_CombinFit"), cDF, chiSqr / (static_cast<float>(nDF)));
       if (evtcent >= evtCentAreaMin && evtcent <= evtCentAreaMax) {
         registry.fill(HIST("h2_PChi2_CombinFitA"), cDF, chiSqr / (static_cast<float>(nDF)));
-  
+
       } else if (evtcent >= evtMidAreaMin && evtcent <= evtMidAreaMax) {
         registry.fill(HIST("h2_PChi2_CombinFitB"), cDF, chiSqr / (static_cast<float>(nDF)));
       }

@@ -1763,3 +1763,4 @@ WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
   return WorkflowSpec{adaptAnalysisTask<JetChargedV2>(cfgc)};
 }
+ 
